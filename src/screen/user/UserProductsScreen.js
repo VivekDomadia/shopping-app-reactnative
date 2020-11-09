@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { Alert, Button, FlatList } from 'react-native';
+import { Alert, Button, FlatList, StyleSheet, Text, View } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,12 +9,8 @@ import colors from '../../constants/colors';
 import { deleteProduct } from '../../store/actions/productAction';
 
 const UserProductsScreen = ({ navigation }) => {
-  const userProduct = useSelector(({ product }) => product.userProducts);
+  const userProducts = useSelector(({ product }) => product.userProducts);
   const dispatch = useDispatch();
-
-  const editProductHandle = (id) => {
-    navigation.navigate('EditProduct', { productId: id });
-  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -43,6 +39,10 @@ const UserProductsScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
+  const editProductHandle = (id) => {
+    navigation.navigate('EditProduct', { productId: id });
+  };
+
   const deleteHandler = (id) => {
     Alert.alert('Are you sure?', 'Do you really want to delete this item?', [
       { text: 'No', style: 'default' },
@@ -54,9 +54,17 @@ const UserProductsScreen = ({ navigation }) => {
     ]);
   };
 
+  if (userProducts.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <Text>No product found! Start adding some..</Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
-      data={userProduct}
+      data={userProducts}
       key={(item) => item.id}
       renderItem={({ item }) => (
         <ProductItem product={item} onSelect={() => editProductHandle(item.id)}>
@@ -77,3 +85,11 @@ const UserProductsScreen = ({ navigation }) => {
 };
 
 export default UserProductsScreen;
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

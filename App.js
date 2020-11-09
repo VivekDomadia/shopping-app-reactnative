@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Provider } from 'react-redux';
-import ShopNavigator from './src/navigation/ShopNavigator';
 import store from './src/store';
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
+import MainNavigator from './src/navigation/MainNavigator';
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -25,7 +25,7 @@ export default function App() {
   }
   return (
     <Provider store={store}>
-      <ShopNavigator />
+      <MainNavigator />
     </Provider>
   );
 }

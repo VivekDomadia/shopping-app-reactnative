@@ -1,5 +1,12 @@
 import React from 'react';
-import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import CartItem from '../../components/shop/CartItem';
 import colors from '../../constants/colors';
@@ -20,6 +27,7 @@ const CartScreen = (props) => {
       a.productId > b.productId ? 1 : -1
     );
   });
+  const isLoading = useSelector(({ ui }) => ui.isLoading);
 
   const dispatch = useDispatch();
 
@@ -32,14 +40,18 @@ const CartScreen = (props) => {
             ${Math.round(cartTotalAmount.toFixed(2) * 100) / 100}
           </Text>
         </Text>
-        <Button
-          title="Order Now"
-          color={colors.accent}
-          disabled={cartitems.length === 0}
-          onPress={() => {
-            dispatch(addOrder(cartitems, cartTotalAmount));
-          }}
-        />
+        {isLoading ? (
+          <ActivityIndicator size="small" color={colors.accent} />
+        ) : (
+          <Button
+            title="Order Now"
+            color={colors.accent}
+            disabled={cartitems.length === 0}
+            onPress={() => {
+              dispatch(addOrder(cartitems, cartTotalAmount));
+            }}
+          />
+        )}
       </View>
       <FlatList
         data={cartitems}

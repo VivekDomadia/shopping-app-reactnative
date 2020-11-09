@@ -1,31 +1,28 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerItemList,
+} from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
+import { useDispatch } from 'react-redux';
 
-import colors from '../constants/colors';
 import ProductsOverviewScreen from '../screen/shop/ProductsOverviewScreen';
 import ProductDetailScreen from '../screen/shop/ProductDetailScreen';
 import CartScreen from '../screen/shop/CartScreen';
 import OrderScreen from '../screen/shop/OrderScreen';
-import UserProductsScreen from '../screen/user/UserProductsScreen';
-import EditProductScreen from '../screen/user/EditProductScreen';
+
+import { defaultNavOptions } from './options';
+import { AdminNavigator } from './UserNavigator';
+import colors from '../constants/colors';
+import { logout } from '../store/actions/authAction';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-const defaultNavOptions = {
-  headerStyle: {
-    backgroundColor: colors.primary,
-  },
-  headerTitleStyle: {
-    fontFamily: 'open-sans-bold',
-  },
-  headerTintColor: 'white',
-};
-
-const ProductsNavigator = () => {
+export const ProductsNavigator = () => {
   return (
     <Stack.Navigator screenOptions={defaultNavOptions}>
       <Stack.Screen
@@ -49,7 +46,7 @@ const ProductsNavigator = () => {
   );
 };
 
-const OrderNavigator = () => {
+export const OrderNavigator = () => {
   return (
     <Stack.Navigator screenOptions={defaultNavOptions}>
       <Stack.Screen
@@ -61,62 +58,57 @@ const OrderNavigator = () => {
   );
 };
 
-const AdminNavigator = () => {
+const CustomDrawerContent = (props) => {
+  const dispatch = useDispatch();
   return (
-    <Stack.Navigator screenOptions={defaultNavOptions}>
-      <Stack.Screen
-        name="UserProduct"
-        component={UserProductsScreen}
-        options={{ title: 'Your Product' }}
+    <DrawerContentScrollView {...props}>
+      <DrawerItemList {...props} />
+      <DrawerItem
+        label="Logout"
+        inactiveTintColor="white"
+        inactiveBackgroundColor={colors.primary}
+        style={{ marginTop: 15 }}
+        labelStyle={{ alignSelf: 'center', fontSize: 16 }}
+        onPress={() => dispatch(logout())}
       />
-      <Stack.Screen
-        name="EditProduct"
-        component={EditProductScreen}
-        options={({ route }) => ({
-          title: route.params?.productId ? 'Edit Product' : 'Add Product',
-        })}
-      />
-    </Stack.Navigator>
+    </DrawerContentScrollView>
   );
 };
 
-const ShopNavigator = () => {
+export const ShopNavigator = () => {
   return (
-    <NavigationContainer>
-      <Drawer.Navigator
-        drawerContentOptions={{ activeTintColor: colors.primary }}
-      >
-        <Drawer.Screen
-          name="Products"
-          component={ProductsNavigator}
-          options={{
-            drawerIcon: ({ tintColor }) => (
-              <Ionicons name="md-cart" size={23} color={tintColor} />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="Orders"
-          component={OrderNavigator}
-          options={{
-            title: 'Your Orders',
-            drawerIcon: ({ tintColor }) => (
-              <Ionicons name="md-list" size={23} color={tintColor} />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="Admin"
-          component={AdminNavigator}
-          options={{
-            drawerIcon: ({ tintColor }) => (
-              <Ionicons name="md-create" size={23} color={tintColor} />
-            ),
-          }}
-        />
-      </Drawer.Navigator>
-    </NavigationContainer>
+    <Drawer.Navigator
+      drawerContentOptions={{ activeTintColor: colors.primary }}
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+    >
+      <Drawer.Screen
+        name="Products"
+        component={ProductsNavigator}
+        options={{
+          drawerIcon: ({ tintColor }) => (
+            <Ionicons name="md-cart" size={23} color={tintColor} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Orders"
+        component={OrderNavigator}
+        options={{
+          title: 'Your Orders',
+          drawerIcon: ({ tintColor }) => (
+            <Ionicons name="md-list" size={23} color={tintColor} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Admin"
+        component={AdminNavigator}
+        options={{
+          drawerIcon: ({ tintColor }) => (
+            <Ionicons name="md-create" size={23} color={tintColor} />
+          ),
+        }}
+      />
+    </Drawer.Navigator>
   );
 };
-
-export default ShopNavigator;

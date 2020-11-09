@@ -3,20 +3,29 @@ import Product from '../../models/Product';
 import {
   CREATE_PRODUCT,
   DELETE_PRODUCT,
+  SET_PRODUCT,
   UPDATE_PRODUCT,
 } from '../actions/productAction';
 
 const initialState = {
-  avalableProducts: PRODUCTS,
-  userProducts: PRODUCTS.filter((prod) => prod.ownerId === 'u1'),
+  avalableProducts: [],
+  userProducts: [],
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case SET_PRODUCT:
+      return {
+        ...state,
+        avalableProducts: action.products,
+        userProducts: action.products.filter(
+          (prod) => prod.ownerId === action.currentUserId
+        ),
+      };
     case CREATE_PRODUCT:
       const newProduct = new Product(
-        new Date().toString(),
-        'u1',
+        action.product.id,
+        action.product.ownerId,
         action.product.title,
         action.product.imageUrl,
         action.product.description,
@@ -39,12 +48,12 @@ export default (state = initialState, action) => {
         action.product.description,
         state.userProducts[productIndex].price
       );
-      const updatedUserProducts = state.userProducts;
+      const updatedUserProducts = [...state.userProducts];
       updatedUserProducts[productIndex] = updatedProduct;
       const avalableProductIndex = state.avalableProducts.findIndex(
         (prod) => prod.id === action.pid
       );
-      const updatedAvalableProducts = state.avalableProducts;
+      const updatedAvalableProducts = [...state.avalableProducts];
       updatedAvalableProducts[avalableProductIndex] = updatedProduct;
       return {
         ...state,
